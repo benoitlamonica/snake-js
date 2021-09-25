@@ -20,9 +20,14 @@ body {
   margin: 0;
   padding: 0;
 }
+h2 {
+  font-size: 1.5rem;
+}
 body {
   font-family: "Comfortaa", cursive;
   h1 {
+    font-size: 3rem;
+    letter-spacing: 0.5rem;
     font-family: "Lobster", cursive;
     color: $main-color;
   }
@@ -34,8 +39,22 @@ body {
     position: relative;
     border: 10px solid $main-color;
     border-radius: 10px;
+    transition: 2s ease-out;
+  }
+  .restart {
+    display: block;
+    padding: 1rem;
+    font-family: "Comfortaa", cursive;
+    font-size: 1rem;
+    cursor: pointer;
+    appearance: none;
+    border: none;
+    background-color: $main-color;
+    color: white;
+    margin: auto;
   }
   .gameover {
+    margin: 1rem;
     transition: 1s ease-in;
     display: none;
     opacity: 0;
@@ -47,5 +66,8 @@ body {
     animation: 1s ease-in infinite shuffle;
     display: none;
     opacity: 0;
+  }
+  .score {
+    color: $main-color;
   }
 }

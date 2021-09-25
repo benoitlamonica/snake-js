@@ -23,8 +23,8 @@ export default class SnakeGame {
     setInitialPosition = () => {
         this.squareSnake.ctx.beginPath()
         this.squareSnake.ctx.fillStyle = 'rgb(92, 56, 83)'
-        this.squareSnake.ctx.arc(this.x + (this.size / 2), this.y + (this.size / 2), this.size / 2, 0, 2 * Math.PI)
-        this.squareSnake.ctx.stroke()
+        this.squareSnake.ctx.arc(this.squareSnake.x + (this.squareSnake.size / 2), this.squareSnake.y + (this.squareSnake.size / 2), this.squareSnake.size / 2, 0, 2 * Math.PI)
+        this.squareSnake.ctx.fill()
     }
 
     /**
@@ -76,6 +76,7 @@ export default class SnakeGame {
         this.squareSnake.ctx.clearRect(0, 0, 500, 520)
         this.setGameOverDisplay(0)
         this.canvas.style.opacity = 1
+        this.canvas.style.backgroundColor = 'white'
         this.reset()
         this.start()
     }
@@ -186,6 +187,7 @@ export default class SnakeGame {
             this.end()
             this.setGameOverDisplay(1)
             this.canvas.style.opacity = 0.4
+            this.canvas.style.backgroundColor = 'black'
         }
     }
 

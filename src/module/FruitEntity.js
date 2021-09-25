@@ -3,7 +3,7 @@ export default class FruitEntity {
     constructor(ctx, size) {
         this.ctx = ctx
         this.size = size
-        this.color = 'rgb(255, 192, 203)'
+        this.color = 'rgb(248, 114, 136)'
         this.x = 1
         this.y = 1
     }
