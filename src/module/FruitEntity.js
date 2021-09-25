@@ -3,22 +3,21 @@ export default class FruitEntity {
     constructor(ctx, size) {
         this.ctx = ctx
         this.size = size
+        this.color = 'rgb(255, 192, 203)'
         this.x = 1
         this.y = 1
     }
 
     create = () => {
         this.randomizePosition()
+        this.draw()
+    }
 
+    draw = () => {
         this.ctx.beginPath()
-        this.ctx.fillStyle = 'green'
-        this.ctx.fillRect(this.x, this.y, this.size, this.size)
-        this.ctx.stroke();
-
-        console.table({
-            'Fruit X': this.x,
-            'Fruit Y': this.y
-        })
+        this.ctx.fillStyle = this.color
+        this.ctx.arc(this.x + (this.size / 2), this.y + (this.size / 2), this.size / 2, 0, 2 * Math.PI)
+        this.ctx.fill()
     }
 
     randomizePosition = () => {

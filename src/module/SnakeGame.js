@@ -1,18 +1,20 @@
-import { dictionaryKeyMethodGame, dictionaryKeyMethodSnake } from '../static/snakeKey'
+import { dictionaryKeyMethodGame, dictionaryKeyMethodSnake } from '../static/snakekeys'
 export default class SnakeGame {
 
-    constructor(square, fruit, canvas) {
+    constructor({ snake, fruit, specialfruit, canvas }) {
         this.gameLaunched = false
         this.score = 0
         this.gameover = false
 
-        this.squareSnake = square
+        this.squareSnake = snake
         this.fruit = fruit
         this.canvas = canvas
+        this.sFruit = specialfruit
 
         this.lastKeyCode = 38
-        this.delayInterval = 50
+        this.delayInterval = 100
         this.currentInterval = null
+        this.frame = 0
 
         this.setInitialPosition()
         document.querySelector('.restart').addEventListener('click', this.restart)
@@ -20,8 +22,8 @@ export default class SnakeGame {
 
     setInitialPosition = () => {
         this.squareSnake.ctx.beginPath()
-        this.squareSnake.ctx.fillStyle = "black";
-        this.squareSnake.ctx.fillRect(this.squareSnake.x, this.squareSnake.y, this.squareSnake.size, this.squareSnake.size);
+        this.squareSnake.ctx.fillStyle = 'rgb(92, 56, 83)'
+        this.squareSnake.ctx.arc(this.x + (this.size / 2), this.y + (this.size / 2), this.size / 2, 0, 2 * Math.PI)
         this.squareSnake.ctx.stroke()
     }
 
@@ -65,6 +67,7 @@ export default class SnakeGame {
         this.lastKeyCode = 38
         this.delayInterval = 100
         this.currentInterval = null
+        this.frame = 0
 
         this.setInitialPosition()
     }
@@ -112,6 +115,10 @@ export default class SnakeGame {
         }, 10)
     }
 
+    superpositionGate = (creation, condition) => {
+        do { creation() } while (condition)
+    }
+
     /**
      * Conditions
      */
@@ -120,10 +127,14 @@ export default class SnakeGame {
         return this.squareSnake.x === this.fruit.x && this.squareSnake.y === this.fruit.y
     }
 
-    hasTouchedChildrens = () => {
+    hasTouchedSpecialFruit = () => {
+        return this.squareSnake.x === this.sFruit.x && this.squareSnake.y === this.sFruit.y
+    }
+
+    hasTouchedChildrens = (x, y) => {
         let touch = 0
         this.squareSnake.childrens.forEach(children => {
-            if (children.x === this.squareSnake.x && children.y === this.squareSnake.y) {
+            if (children.x === x && children.y === y) {
                 touch++
             }
         })
@@ -140,12 +151,27 @@ export default class SnakeGame {
 
     handleFruitCollision = () => {
         if (this.hasTouchedFruit()) {
-            console.log('Collision !');
-            this.fruit.create()
+            this.superpositionGate(this.fruit.create, this.hasTouchedChildrens(this.fruit.x, this.fruit.y))
             this.score++
             this.setScore()
             this.handleDifficulty()
             this.squareSnake.addChildren()
+        }
+    }
+
+    handleSpecialFruitCollision = () => {
+        if (this.hasTouchedSpecialFruit()) {
+            if (this.sFruit.exist) {
+                this.squareSnake.deleteHalfChildrens()
+                this.fruit.draw()
+                this.sFruit.exist = false
+            }
+        }
+    }
+
+    handleSpecialFruitCreation = () => {
+        if (this.frame % 100 === 0 && this.frame !== 0) {
+            this.superpositionGate(this.sFruit.create, this.hasTouchedChildrens(this.sFruit.x, this.sFruit.y))
         }
     }
 
@@ -156,7 +182,7 @@ export default class SnakeGame {
     }
 
     handleGameover = () => {
-        if (this.hasTouchedChildrens() || this.hasTouchedLimits()) {
+        if (this.hasTouchedChildrens(this.squareSnake.x, this.squareSnake.y) || this.hasTouchedLimits()) {
             this.end()
             this.setGameOverDisplay(1)
             this.canvas.style.opacity = 0.4
@@ -183,8 +209,11 @@ export default class SnakeGame {
         this.currentInterval = setInterval(() => {
             callback()
             this.handleFruitCollision()
-            this.squareSnake.updateCanvas()
+            this.handleSpecialFruitCollision()
             this.handleGameover()
+            this.handleSpecialFruitCreation()
+            this.squareSnake.updateCanvas()
+            this.frame++
         }, this.delayInterval)
     }
 }

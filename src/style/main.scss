@@ -1,4 +1,18 @@
 // SCSS
+@import url("https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500&family=Lobster&display=swap");
+$main-color: rgb(255, 192, 203);
+@keyframes shuffle {
+  0% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
 html,
 body {
   height: 100%;
@@ -7,13 +21,19 @@ body {
   padding: 0;
 }
 body {
+  font-family: "Comfortaa", cursive;
+  h1 {
+    font-family: "Lobster", cursive;
+    color: $main-color;
+  }
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   #canvas {
     position: relative;
-    border: 2px solid red;
+    border: 10px solid $main-color;
+    border-radius: 10px;
   }
   .gameover {
     transition: 1s ease-in;
@@ -24,7 +44,7 @@ body {
     }
   }
   .paused {
-    transition: 1s ease-in;
+    animation: 1s ease-in infinite shuffle;
     display: none;
     opacity: 0;
   }

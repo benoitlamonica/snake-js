@@ -22,9 +22,13 @@ export default class SnakeChildren {
         this.ctx.clearRect(this.lastX, this.lastY, this.size, this.size);
 
         this.ctx.beginPath()
-        this.ctx.fillStyle = 'red'
-        this.ctx.fillRect(this.x, this.y, this.size, this.size);
-        this.ctx.stroke();
+        this.ctx.fillStyle = 'rgb(231, 192, 222)'
+        this.ctx.arc(this.x + (this.size / 2), this.y + (this.size / 2), this.size / 2, 0, 2 * Math.PI)
+        this.ctx.fill();
+    }
+
+    delete = () => {
+        this.ctx.clearRect(this.x, this.y, this.size, this.size);
     }
 
 }

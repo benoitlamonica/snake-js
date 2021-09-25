@@ -19,9 +19,9 @@ export default class SnakeEntity {
 
         //Creating new square
         this.ctx.beginPath()
-        this.ctx.fillStyle = 'black'
-        this.ctx.fillRect(this.x, this.y, this.size, this.size);
-        this.ctx.stroke();
+        this.ctx.fillStyle = 'rgb(92, 56, 83)'
+        this.ctx.arc(this.x + (this.size / 2), this.y + (this.size / 2), this.size / 2, 0, 2 * Math.PI)
+        this.ctx.fill();
 
 
         this.lastX = this.x
@@ -34,6 +34,11 @@ export default class SnakeEntity {
         } else {
             this.childrens.push(new SnakeChildren(this.childrens[this.childrens.length - 1]))
         }
+    }
+
+    deleteHalfChildrens = () => {
+        this.childrens.splice(Math.floor(this.childrens.length / 2), this.childrens.length - 1)
+        this.ctx.clearRect(0, 0, 500, 500);
     }
 
     reset = () => {
