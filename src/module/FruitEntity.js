@@ -14,6 +14,11 @@ export default class FruitEntity {
         this.ctx.fillStyle = 'green'
         this.ctx.fillRect(this.x, this.y, this.size, this.size)
         this.ctx.stroke();
+
+        console.table({
+            'Fruit X': this.x,
+            'Fruit Y': this.y
+        })
     }
 
     randomizePosition = () => {

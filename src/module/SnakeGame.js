@@ -11,7 +11,7 @@ export default class SnakeGame {
         this.canvas = canvas
 
         this.lastKeyCode = 38
-        this.delayInterval = 100
+        this.delayInterval = 50
         this.currentInterval = null
 
         this.setInitialPosition()
@@ -151,7 +151,7 @@ export default class SnakeGame {
 
     handleDifficulty = () => {
         if (this.score % 5 === 0) {
-            this.delayInterval -= 5
+            this.delayInterval -= 1
         }
     }
 

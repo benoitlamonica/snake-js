@@ -13,7 +13,7 @@ console.log('====================================');
 
 const canvas = document.getElementById('canvas')
 const ctx = canvas.getContext('2d')
-const squareMesure = 20
+const squareMesure = 10
 
 const snake = new SnakeEntity(ctx, squareMesure)
 const fruit = new FruitEntity(ctx, squareMesure)
