@@ -21,7 +21,6 @@ export default class SnakeChildren {
     updateCanvas = () => {
         this.ctx.clearRect(this.lastX, this.lastY, this.size, this.size);
 
-        //Creating new square
         this.ctx.beginPath()
         this.ctx.fillStyle = 'red'
         this.ctx.fillRect(this.x, this.y, this.size, this.size);

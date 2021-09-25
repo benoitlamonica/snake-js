@@ -18,8 +18,8 @@ export default class FruitEntity {
 
     randomizePosition = () => {
         const gridSize = 500 / this.size
-        let x = Math.floor(Math.random() * gridSize) * this.size
-        let y = Math.floor(Math.random() * gridSize) * this.size
+        const x = Math.floor(Math.random() * gridSize) * this.size
+        const y = Math.floor(Math.random() * gridSize) * this.size
         this.x = x
         this.y = y
     }

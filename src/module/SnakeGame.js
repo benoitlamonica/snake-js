@@ -15,6 +15,7 @@ export default class SnakeGame {
         this.currentInterval = null
 
         this.setInitialPosition()
+        document.querySelector('.restart').addEventListener('click', this.restart)
     }
 
     setInitialPosition = () => {
@@ -23,6 +24,10 @@ export default class SnakeGame {
         this.squareSnake.ctx.fillRect(this.squareSnake.x, this.squareSnake.y, this.squareSnake.size, this.squareSnake.size);
         this.squareSnake.ctx.stroke()
     }
+
+    /**
+     * Game Core
+     */
 
     start = () => {
         this.gameLaunched = true
@@ -34,9 +39,11 @@ export default class SnakeGame {
     pause = () => {
         if (this.gameLaunched) {
             this.gameLaunched = false
+            this.setPauseDisplay(1)
             this.clearInterval()
         } else {
             this.gameLaunched = true
+            this.setPauseDisplay(0)
             this.handleInterval(() => this.resumeLastDirection())
         }
     }
@@ -48,13 +55,92 @@ export default class SnakeGame {
         this.clearInterval();
     }
 
+    reset = () => {
+        this.gameLaunched = false
+        this.score = 0
+        this.gameover = false
+
+        this.squareSnake = this.squareSnake.reset()
+
+        this.lastKeyCode = 38
+        this.delayInterval = 100
+        this.currentInterval = null
+
+        this.setInitialPosition()
+    }
+
+    restart = () => {
+        this.squareSnake.ctx.clearRect(0, 0, 500, 520)
+        this.setGameOverDisplay(0)
+        this.canvas.style.opacity = 1
+        this.reset()
+        this.start()
+    }
+
+    /**
+     * Mixins
+     */
+
     setScore = () => {
         let spanScore = document.querySelector('.score');
         spanScore.textContent = this.score
     }
 
+    clearInterval = () => {
+        if (this.currentInterval) {
+            clearInterval(this.currentInterval)
+        }
+    }
+
+    resumeLastDirection = () => {
+        this.squareSnake[dictionaryKeyMethodSnake[this.lastKeyCode]]()
+    }
+
+    setGameOverDisplay = (state) => {
+        const gameOverBloc = document.querySelector('.gameover')
+        gameOverBloc.style.display = state ? 'block' : 'none'
+        setTimeout(() => {
+            gameOverBloc.style.opacity = state ? 1 : 0
+        }, 10)
+    }
+
+    setPauseDisplay = (state) => {
+        const pauseBloc = document.querySelector('.paused')
+        pauseBloc.style.display = state ? 'block' : 'none'
+        setTimeout(() => {
+            pauseBloc.style.opacity = state ? 1 : 0
+        }, 10)
+    }
+
+    /**
+     * Conditions
+     */
+
+    hasTouchedFruit = () => {
+        return this.squareSnake.x === this.fruit.x && this.squareSnake.y === this.fruit.y
+    }
+
+    hasTouchedChildrens = () => {
+        let touch = 0
+        this.squareSnake.childrens.forEach(children => {
+            if (children.x === this.squareSnake.x && children.y === this.squareSnake.y) {
+                touch++
+            }
+        })
+        return touch > 0
+    }
+
+    hasTouchedLimits = () => {
+        return this.squareSnake.x === 500 || this.squareSnake.y === 500 || this.squareSnake.x === -this.squareSnake.size || this.squareSnake.y === -this.squareSnake.size
+    }
+
+    /**
+     * Main Handlers
+     */
+
     handleFruitCollision = () => {
-        if (this.squareSnake.x === this.fruit.x && this.squareSnake.y === this.fruit.y) {
+        if (this.hasTouchedFruit()) {
+            console.log('Collision !');
             this.fruit.create()
             this.score++
             this.setScore()
@@ -70,9 +156,10 @@ export default class SnakeGame {
     }
 
     handleGameover = () => {
-        if (this.squareSnake.x === 500 || this.squareSnake.y === 500 || this.squareSnake.x === -this.squareSnake.size || this.squareSnake.y === -this.squareSnake.size) {
+        if (this.hasTouchedChildrens() || this.hasTouchedLimits()) {
             this.end()
-            this.canvas.classList.add('gameover');
+            this.setGameOverDisplay(1)
+            this.canvas.style.opacity = 0.4
         }
     }
 
@@ -100,15 +187,4 @@ export default class SnakeGame {
             this.handleGameover()
         }, this.delayInterval)
     }
-
-    clearInterval = () => {
-        if (this.currentInterval) {
-            clearInterval(this.currentInterval)
-        }
-    }
-
-    resumeLastDirection = () => {
-        this.squareSnake[dictionaryKeyMethodSnake[this.lastKeyCode]]()
-    }
-
 }

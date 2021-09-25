@@ -10,6 +10,7 @@ export default class SnakeEntity {
         this.lastX = this.x
         this.lastY = this.y
         this.childrens = []
+        this.direction = null
     }
 
     updateCanvas = () => {
@@ -25,11 +26,6 @@ export default class SnakeEntity {
 
         this.lastX = this.x
         this.lastY = this.y
-
-        console.table({
-            X: this.x,
-            Y: this.y
-        })
     }
 
     addChildren = () => {
@@ -40,19 +36,49 @@ export default class SnakeEntity {
         }
     }
 
+    reset = () => {
+        this.x = 260
+        this.y = 260
+        this.lastX = this.x
+        this.lastY = this.y
+        this.childrens = []
+        this.direction = null
+        return this
+    }
+
     goDown = () => {
-        this.y += this.size
+        if (this.direction !== 'up') {
+            this.y += this.size
+            this.direction = 'down'
+        } else {
+            this.goUp()
+        }
     }
 
     goUp = () => {
-        this.y -= this.size
+        if (this.direction !== 'down') {
+            this.y -= this.size
+            this.direction = 'up'
+        } else {
+            this.goDown()
+        }
     }
 
     goLeft = () => {
-        this.x -= this.size
+        if (this.direction !== 'right') {
+            this.x -= this.size
+            this.direction = 'left'
+        } else {
+            this.goRight()
+        }
     }
 
     goRight = () => {
-        this.x += this.size
+        if (this.direction !== 'left') {
+            this.x += this.size
+            this.direction = 'right'
+        } else {
+            this.goLeft()
+        }
     }
 }
