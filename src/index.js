@@ -12,6 +12,6 @@ console.log('====================================');
 
 const snakeGame = new SnakeGame(param)
 
-snakeGame.start()
+snakeGame.run()
 
 

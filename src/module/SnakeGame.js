@@ -14,6 +14,7 @@ export default class SnakeGame {
         this.lastKeyCode = 38
         this.delayInterval = 100
         this.currentInterval = null
+        this.moveMethod = 'goUp'
         this.frame = 0
 
         this.setInitialPosition()
@@ -31,11 +32,15 @@ export default class SnakeGame {
      * Game Core
      */
 
+    run = () => {
+        this.setScore()
+        window.addEventListener('keydown', this.handleGameListener)
+    }
+
     start = () => {
         this.gameLaunched = true
         this.fruit.create()
-        this.setScore()
-        window.addEventListener('keydown', this.handleGameListener)
+        this.setInterval()
     }
 
     pause = () => {
@@ -46,7 +51,8 @@ export default class SnakeGame {
         } else {
             this.gameLaunched = true
             this.setPauseDisplay(0)
-            this.handleInterval(() => this.resumeLastDirection())
+            this.moveMethod = this.resumeLastDirection()
+            this.setInterval()
         }
     }
 
@@ -67,6 +73,7 @@ export default class SnakeGame {
         this.lastKeyCode = 38
         this.delayInterval = 100
         this.currentInterval = null
+        this.moveMethod = 'goUp'
         this.frame = 0
 
         this.setInitialPosition()
@@ -78,7 +85,7 @@ export default class SnakeGame {
         this.canvas.style.opacity = 1
         this.canvas.style.backgroundColor = 'white'
         this.reset()
-        this.start()
+        this.run()
     }
 
     /**
@@ -90,6 +97,18 @@ export default class SnakeGame {
         spanScore.textContent = this.score
     }
 
+    setInterval = () => {
+        this.currentInterval = setInterval(() => {
+            this.squareSnake[this.moveMethod]()
+            this.handleFruitCollision()
+            this.handleSpecialFruitCollision()
+            this.handleGameover()
+            this.handleSpecialFruitCreation()
+            this.squareSnake.updateCanvas()
+            this.frame++
+        }, this.delayInterval)
+    }
+
     clearInterval = () => {
         if (this.currentInterval) {
             clearInterval(this.currentInterval)
@@ -97,7 +116,7 @@ export default class SnakeGame {
     }
 
     resumeLastDirection = () => {
-        this.squareSnake[dictionaryKeyMethodSnake[this.lastKeyCode]]()
+        return dictionaryKeyMethodSnake[this.lastKeyCode]
     }
 
     setGameOverDisplay = (state) => {
@@ -178,7 +197,7 @@ export default class SnakeGame {
 
     handleDifficulty = () => {
         if (this.score % 5 === 0) {
-            this.delayInterval -= 1
+            this.delayInterval -= 5
         }
     }
 
@@ -194,28 +213,19 @@ export default class SnakeGame {
     handleGameListener = (e) => {
         if (this.gameLaunched) {
             if (this.squareSnake[dictionaryKeyMethodSnake[e.which]]) {
-                this.handleInterval(() => this.squareSnake[dictionaryKeyMethodSnake[e.which]]())
+                this.moveMethod = dictionaryKeyMethodSnake[e.which]
                 this.lastKeyCode = e.which
                 return
             }
         }
 
         if (this[dictionaryKeyMethodGame[e.which]]) {
-            this[dictionaryKeyMethodGame[e.which]]()
-            return
+            if (this.frame === 0) {
+                this.start()
+            } else {
+                this[dictionaryKeyMethodGame[e.which]]()
+                return
+            }
         }
-    }
-
-    handleInterval = (callback) => {
-        this.clearInterval()
-        this.currentInterval = setInterval(() => {
-            callback()
-            this.handleFruitCollision()
-            this.handleSpecialFruitCollision()
-            this.handleGameover()
-            this.handleSpecialFruitCreation()
-            this.squareSnake.updateCanvas()
-            this.frame++
-        }, this.delayInterval)
     }
 }
