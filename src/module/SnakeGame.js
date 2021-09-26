@@ -16,6 +16,7 @@ export default class SnakeGame {
         this.currentInterval = null
         this.moveMethod = 'goUp'
         this.frame = 0
+        this.frameSFruitCreated = 0
 
         this.setInitialPosition()
         document.querySelector('.restart').addEventListener('click', this.restart)
@@ -75,6 +76,7 @@ export default class SnakeGame {
         this.currentInterval = null
         this.moveMethod = 'goUp'
         this.frame = 0
+        this.frameSFruitCreated = 0
 
         this.setInitialPosition()
     }
@@ -106,6 +108,7 @@ export default class SnakeGame {
             this.handleSpecialFruitCreation()
             this.squareSnake.updateCanvas()
             this.frame++
+            this.handleSpecialFruitDeletion()
         }, this.delayInterval)
     }
 
@@ -135,8 +138,12 @@ export default class SnakeGame {
         }, 10)
     }
 
-    superpositionGate = (creation, condition) => {
-        do { creation() } while (condition)
+    superpositionGate = (creation) => {
+        creation((x, y) => {
+            while (this.hasTouchedHead(x, y) || this.hasTouchedChildrens(x, y)) {
+                this.superpositionGate(creation)
+            }
+        })
     }
 
     /**
@@ -161,6 +168,20 @@ export default class SnakeGame {
         return touch > 0
     }
 
+    hasSameLineChildrens = (x, y) => {
+        let touch = 0
+        this.squareSnake.childrens.forEach(children => {
+            if (children.x === x || children.y === y) {
+                touch++
+            }
+        })
+        return touch > 0
+    }
+
+    hasTouchedHead = (x, y) => {
+        return this.squareSnake.x === x && this.squareSnake.y === y
+    }
+
     hasTouchedLimits = () => {
         return this.squareSnake.x === 500 || this.squareSnake.y === 500 || this.squareSnake.x === -this.squareSnake.size || this.squareSnake.y === -this.squareSnake.size
     }
@@ -171,7 +192,7 @@ export default class SnakeGame {
 
     handleFruitCollision = () => {
         if (this.hasTouchedFruit()) {
-            this.superpositionGate(this.fruit.create, this.hasTouchedChildrens(this.fruit.x, this.fruit.y))
+            this.superpositionGate(this.fruit.create)
             this.score++
             this.setScore()
             this.handleDifficulty()
@@ -191,7 +212,14 @@ export default class SnakeGame {
 
     handleSpecialFruitCreation = () => {
         if (this.frame % 100 === 0 && this.frame !== 0) {
-            this.superpositionGate(this.sFruit.create, this.hasTouchedChildrens(this.sFruit.x, this.sFruit.y))
+            this.frameSFruitCreated = this.frame
+            this.superpositionGate(this.sFruit.create)
+        }
+    }
+
+    handleSpecialFruitDeletion = () => {
+        if (this.frame === (this.frameSFruitCreated + 100) && this.frameSFruitCreated !== 0) {
+            this.sFruit.destroy()
         }
     }
 
@@ -211,13 +239,17 @@ export default class SnakeGame {
     }
 
     handleGameListener = (e) => {
-        if (this.gameLaunched) {
-            if (this.squareSnake[dictionaryKeyMethodSnake[e.which]]) {
+        if (this.squareSnake[dictionaryKeyMethodSnake[e.which]]) {
+            if (this.frame === 0) {
+                this.start()
                 this.moveMethod = dictionaryKeyMethodSnake[e.which]
+            } else if (this.gameLaunched) {
                 this.lastKeyCode = e.which
+                this.moveMethod = dictionaryKeyMethodSnake[e.which]
                 return
             }
         }
+
 
         if (this[dictionaryKeyMethodGame[e.which]]) {
             if (this.frame === 0) {

@@ -4,13 +4,17 @@ export default class FruitEntity {
         this.ctx = ctx
         this.size = size
         this.color = 'rgb(248, 114, 136)'
+        this.totalCreated = 0
         this.x = 1
         this.y = 1
     }
 
-    create = () => {
+    create = (cb = Function()) => {
         this.randomizePosition()
         this.draw()
+        this.totalCreated++
+        console.table({ 'Fruit X': this.x, 'Fruit Y': this.y, 'Total': this.totalCreated });
+        cb(this.x, this.y)
     }
 
     draw = () => {
@@ -21,7 +25,7 @@ export default class FruitEntity {
     }
 
     randomizePosition = () => {
-        const gridSize = 500 / this.size
+        const gridSize = 480 / this.size
         const x = Math.floor(Math.random() * gridSize) * this.size
         const y = Math.floor(Math.random() * gridSize) * this.size
         this.x = x

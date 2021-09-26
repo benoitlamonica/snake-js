@@ -16,6 +16,11 @@ export default class SpecialFruitEntity extends FruitEntity {
         }
     }
 
+    destroy = () => {
+        this.ctx.clearRect(this.x, this.y, this.size, this.size);
+        this.exist = false
+    }
+
     shouldExist = () => {
         let number = Math.floor(Math.random() * 2);
         return number === 1
